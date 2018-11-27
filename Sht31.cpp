@@ -24,12 +24,12 @@ Sht31::Sht31(PinName sda, PinName scl) : _i2c(sda, scl) {
 }
 
 float Sht31::readTemperature(void) {
-    if (! readTempHum()) return NAN;
+    if (! readTempHum()) return -1;
     return temp;
 }
 
 float Sht31::readHumidity(void) {
-    if (! readTempHum()) return NAN;
+    if (! readTempHum()) return -1;
     return humidity;
 }
 
