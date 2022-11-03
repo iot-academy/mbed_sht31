@@ -17,6 +17,18 @@
 #include "Sht31.h"
 #include "mbed.h"
 
+#define __ADDUNITS(x, y)         (x##y)
+
+#if MBED_MAJOR_VERSION == 2
+#define WAIT_MS(x)       wait_ms(x)
+#elif  MBED_MAJOR_VERSION == 5
+#define WAIT_MS(x)       Thread::wait(x)
+#elif  MBED_MAJOR_VERSION == 6
+#define WAIT_MS(x)       ThisThread::sleep_for(__ADDUNITS(x,ms))
+#else
+#error "Running on Unknown OS"
+#endif
+
 Sht31::Sht31(PinName sda, PinName scl) : _i2c(sda, scl) {
     _i2caddr = (0x44 << 1);
     reset();
@@ -35,7 +47,7 @@ float Sht31::readHumidity(void) {
 
 void Sht31::reset(void) {
     writeCommand(SHT31_SOFTRESET);
-    wait_ms(10);
+    WAIT_MS(10);
 }
 
 uint16_t Sht31::readStatus(void) {
@@ -62,7 +74,7 @@ bool Sht31::readTempHum(void) {
 
     writeCommand(SHT31_MEAS_HIGHREP);
 
-    wait_ms(500);
+    WAIT_MS(500);
     _i2c.read(_i2caddr, readbuffer, 6);
     
     uint16_t ST, SRH;
